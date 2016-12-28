@@ -16,16 +16,7 @@ class SigninModel extends Model
 	public function __construct ()
 	{
 		parent::__construct ();
-		$this->_mogo           = new Mongo(C ('MONGODB_CONN'));
-		$this->_db             = $this->_mogo->selectDB ('cpzone');
-		$this->_zone           = $this->_db->selectCollection ('zone');
-		$this->_zone_members   = $this->_db->selectCollection ('zone_members');
 
-		//new
-		$this->_zone_coinlog   = $this->_db->selectCollection ('zone_coinlog'); 	
-		$this->_zone_collection= $this->_db->selectCollection ('zone_collection');	
-		$this->_zone_talkingtags= $this->_db->selectCollection ('zone_talkingtags');	
-		$this->_zone_member_experiencelog= $this->_db->selectCollection ('zone_member_experiencelog');	
 
 	}
 	
