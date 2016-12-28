@@ -1,4 +1,7 @@
 <?php
+/*
+* 插入与更新保存方法
+*/
 function save_info($table,$action="",$data="",$where=""){
 	if(mysql_connects()){
 		if( !$table || !$action || !$data){
@@ -7,7 +10,10 @@ function save_info($table,$action="",$data="",$where=""){
 		if($action == 'insert' ){
 			$colum = join(',',array_keys($data));
 			$values= join(',',array_map(function($tiem){
-				return "'".addslashes($tiem)."'";
+		 	if(is_int($item))
+		 		return $item;
+		 	else
+		 		return "'".addslashes($item)."'";
 			},$data));
 			$sql='insert into '.$table."(" .$colum . ') values ('.$values .') ';
 		}
