@@ -1,7 +1,7 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: ZLB
+ * User: xu
  * Date: 2015/5/25 0025 17:22
  */
 use Think\Model;
