@@ -107,14 +107,15 @@ class SigninModel extends Model
 		$result=$this->query($sql);
 		return $result ? $result:''	;
 	}
-	/*
+		/*
 	* 	判断是否连续签到
 	*	$guid 用户ID 	必
 	*	$type 类型ID 	必
 	*	$times  某天时间戳 非 默认当天
 	*	$zoneid 所属圈子ID	非
 	*/
-	public function is_contiunesign($table,$guid,$times,$zoneid){
+	public function is_contiunesign($table,$guid,$times,$zoneid)
+	{
 		if(!$times){
 			$times =time();
 		}	
@@ -122,19 +123,24 @@ class SigninModel extends Model
 		if($zoneid){
 			$where.=" AND zoneid='{$zoneid}'";
 		}
-		$where.=" ORDER BY addtime DESC limit 7";
-		$sql="select addtime from `{$table}` where ".$where;
+		$where.=" ORDER BY addtime DESC limit 7 ";
+		$sql="select addtime,prize from `{$table}` where ".$where;
 
 		$result=$this->query($sql);
 		$i=0;
 		$tdays=array(4,6,9,11);
-
-		if($result){
+		if(count($result)>1){
+			$days[0]['y']=(int)date('Y',$times);		
+			$days[0]['m']=(int)date('m',$times);
+			$days[0]['d']=(int)date('d',$times);	
+			$key = 1;			
 			foreach ($result as $k => $v) {
-				$days[$k]['d']=(int)date('d',$v['addtime']);
-				$days[$k]['m']=(int)date('m',$v['addtime']);
-				$days[$k]['y']=(int)date('Y',$v['addtime']);
+				$days[$key]['y']=(int)date('Y',$v['addtime']);		
+				$days[$key]['m']=(int)date('m',$v['addtime']);
+				$days[$key]['d']=(int)date('d',$v['addtime']);
+				$key++;
 			}
+
 			if($limit == 6){
 				$day['y']=date('Y',$times);
 				$day['m']=date('m',$times);
@@ -145,11 +151,15 @@ class SigninModel extends Model
 				}
 				
 			}
-			for(;$i<count($days); $i++){
+			while($i<count($days))
+			{
 
-				if($days[$i]['y']-$days[$i+1]['y'] >=2){  //相差超过两年
+				if($days[$i]['y']-$days[$i+1]['y'] >=2)
+				{  //相差超过两年
 					break;
-				}else if($days[$i]['y']-$days[$i+1]['y'] ==1){ //跨年的情况
+				}
+				else if($days[$i]['y']-$days[$i+1]['y'] ==1)
+				{ //跨年的情况
 
 					if($days[$i]['m'] !=1 || $days[$i+1]['m'] !=12){  //跨年的月份
 						break;
@@ -157,7 +167,9 @@ class SigninModel extends Model
 						break;
 					}
 				
-				}else {  //同一年的情况
+				}
+				else
+				{  //同一年的情况
 
 					if($days[$i]['m'] - $days[$i+1]['m']>1){  //相差超过一个月
 						break;
@@ -186,10 +198,25 @@ class SigninModel extends Model
 						}
 					}
 				}
+				$i++;
 			}
-		}	
 
-		return $i?$i+1:$i;
+		}else if(count($result) == 1 && $result[0]['addtime'] >= get_lasttimestramp()){
+			$i = 1;
+		}
+		$flag = 0;
+		foreach ($result as $k => $v) {
+			if($v['prize'] == 12){
+				$flag = $k;
+				break;
+			}
+		}
+		if($flag){
+			$i = $flag;
+		}else if($i == 7){
+			$i =6;
+		}
+		return $i ? $i:0;
 		
 	}
 
